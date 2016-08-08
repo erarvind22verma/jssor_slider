@@ -1,0 +1,7 @@
+name = "Jssor Slideshow"
+description = 'Jssor Slideshow'
+dependencies[] = 'libraries'
+dependencies[] = 'jquery_update'
+package = Slideshow
+core = 7.x
+version = "7.x-1.0"

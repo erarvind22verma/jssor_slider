@@ -1,0 +1,125 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function jssor_slideshow_theme() {
+  return array(
+    'jssor_slideshow_formatter_view' => array(
+      'variables' => array("variable"=>NULL),
+      'template' => 'templates/jssor-slideshow-formatter-view',
+    ),
+    'jssor_gallery_formatter_view' => array(
+      'variables' => array("variable"=>NULL),
+      'template' => 'templates/jssor-gallery-formatter-view',
+    ),
+    'jssor_carousel_formatter_view' => array(
+      'variables' => array("variable"=>NULL),
+      'template' => 'templates/jssor-carousel-formatter-view',
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function jssor_slideshow_field_formatter_info() { 
+  return array(
+    'jssor_slideshow_formatter' => array( //Machine name of the formatter
+      'label' => t('Jssor Slideshow'),
+      'field types' => array('image'), //This will only be available to text fields
+      'settings'  => array( //Array of the settings we'll create
+        'type' => 'slideshow',
+        'image_style' => '-None-', //give a default value for when the form is first loaded
+        'speed' => '3000', //ditto
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function jssor_slideshow_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $element = array();
+  $image_style = image_styles();
+  $style_array = array();
+
+  foreach($image_style as $key=>$data){
+       $style_array[$key] = $data["label"];
+  }
+
+  $element['type'] = array(
+    '#type'           => 'select',                            
+    '#title'          => t('Jssor Slideshow Type'),            
+    '#description'    => t('Select jssor slideshow type'),  
+    '#default_value'  => $settings['type'],               
+    '#options'        => array(
+      'slideshow'  => 'Slideshow',
+      'gallery' => 'Gallery',
+      'carousel'  => 'Carousel',
+    ),
+  );
+
+  $element['image_style'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Image Style'),
+    '#description'    => t('Select Image Style'),
+    '#default_value'  => $settings['image_style'],
+    '#options'        => $style_array,
+  );
+
+  $element['speed'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Animation Speed'),
+    '#description'    => t('Insert animation speed in numeric number. Example: 300'),
+    '#default_value'  => $settings['speed'],
+  );
+  return $element;
+}
+
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+
+function jssor_slideshow_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $summary = t('Manage slider settings from here.');
+  return $summary;
+}
+
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function jssor_slideshow_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array(); // Initialize the var
+  $settings = $display['settings']; // get the settings
+  $jssor_type = $settings['type']; // The Size setting selected in the settings form
+  $jssor_animation_speed = $settings['speed']; // The tool tip assigned in settings
+  $jssor_image_style = $settings['image_style']; 
+
+switch ($jssor_type) {
+    case "gallery":
+        $html = theme("jssor_gallery_formatter_view",array("items"=>$items));
+        break;
+    case "carousel":
+        $html = theme("jssor_carousel_formatter_view",array("items"=>$items));
+        break;
+    default:
+        $html = theme("jssor_slideshow_formatter_view",array("items"=>$items));
+}
+
+
+  
+
+  if(isset($fb)) {
+    $link = l($image, $fb, $options); // Create the Link
+    $element[0]['#markup'] = $link; // Assign it to the #markup of the element
+  }
+  return $element;
+}
