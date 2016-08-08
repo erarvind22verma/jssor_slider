@@ -97,29 +97,26 @@ function jssor_slideshow_field_formatter_settings_summary($field, $instance, $vi
  * Implements hook_field_formatter_view().
  */
 function jssor_slideshow_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  global $base_path;
   $element = array(); // Initialize the var
   $settings = $display['settings']; // get the settings
   $jssor_type = $settings['type']; // The Size setting selected in the settings form
   $jssor_animation_speed = $settings['speed']; // The tool tip assigned in settings
   $jssor_image_style = $settings['image_style']; 
+  $path = $base_path.drupal_get_path("module","jssor_slideshow");
 
 switch ($jssor_type) {
     case "gallery":
-        $html = theme("jssor_gallery_formatter_view",array("items"=>$items));
+        $html = theme("jssor_gallery_formatter_view",array("items"=>$items,"path"=>$path,"field_id"=>$instance["field_id"]));
         break;
     case "carousel":
-        $html = theme("jssor_carousel_formatter_view",array("items"=>$items));
+        $html = theme("jssor_carousel_formatter_view",array("items"=>$items,"path"=>$path,"field_id"=>$instance["field_id"]));
         break;
     default:
-        $html = theme("jssor_slideshow_formatter_view",array("items"=>$items));
+        $html = theme("jssor_slideshow_formatter_view",array("items"=>$items,"path"=>$path,"field_id"=>$instance["field_id"],"image_style"=>$settings['image_style']));
 }
-
-
-  
-
-  if(isset($fb)) {
-    $link = l($image, $fb, $options); // Create the Link
-    $element[0]['#markup'] = $link; // Assign it to the #markup of the element
+  if(isset($html)) {
+   $element[0]['#markup'] = $html; // Assign it to the #markup of the element
   }
   return $element;
 }
